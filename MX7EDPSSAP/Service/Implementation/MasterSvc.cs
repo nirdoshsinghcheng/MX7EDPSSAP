@@ -140,8 +140,7 @@ namespace MX7EDPSSAP.Service.Implementation
                 IEnumerable<dynamic> dd = new List<dynamic>();
                 var userid = 1;
                 //var dt = new DataTable("dt");
-                string csvPath = @"CSVFile\OrderData_711_Store1.csv";
-                //string csvPath = "https://drive.google.com/file/d/1WVnYWBcOyhznlAP1gu1yL5sUT87rWMXP/view?usp=sharing";
+                string csvPath = @"CSVFile\OrderData_711_Store3.csv";                
 
                 var ss = GetStreamFromUrl(csvPath);
 
@@ -159,21 +158,11 @@ namespace MX7EDPSSAP.Service.Implementation
                 {
 
                     dd = csv.GetRecords<RawData>().ToList();
-                    var xml = Serializer(typeof(List<RawData>), dd);
-
-                    //var dt = ToDataTable(dd);
-                    //using (var dr = new CsvDataReader(csv))
-                    //{
-                    //   dt.Columns.Add("Id", typeof(int));
-                    //   dt.Columns.Add("Name", typeof(string));
-                    //    dt.Load(dr);
-                    //}
-
-                    //string xml = null;
-
-                    //xml = JsonHelper.ConvertDatatableToXML(dt);
-                    resultList = await _iMasterDataRepo.InsertDataRecord<RawData>(xml, userid);
-
+                  
+                    List<dynamic> resultInJson2 = new List<dynamic>();
+                    string resultInJson = JsonConvert.SerializeObject(dd);
+                    
+                    resultList = await _iMasterDataRepo.InsertDataRecord<RawData>(resultInJson.ToString(), userid);
 
                 }
                 if (!resultList.Any())
@@ -206,54 +195,7 @@ namespace MX7EDPSSAP.Service.Implementation
 
             return new MemoryStream(imageData);
         }
-        public static DataTable ToDataTable<T>(List<T> items)
-        {
-            DataTable dataTable = new DataTable(typeof(T).Name);
-
-            //Get all the properties
-            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (PropertyInfo prop in Props)
-            {
-                //Defining type of data column gives proper data table 
-                var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
-                //Setting column names as Property names
-                dataTable.Columns.Add(prop.Name, type);
-            }
-            foreach (T item in items)
-            {
-                var values = new object[Props.Length];
-                for (int i = 0; i < Props.Length; i++)
-                {
-                    //inserting property values to datatable rows
-                    values[i] = Props[i].GetValue(item, null);
-                }
-                dataTable.Rows.Add(values);
-            }
-            //put a breakpoint here and check datatable
-            return dataTable;
-        }
-        public static string Serializer(Type type, object obj)
-        {
-            MemoryStream Stream = new MemoryStream();
-            XmlSerializer xml = new XmlSerializer(type);
-            try
-            {
-                //Serialized object
-                xml.Serialize(Stream, obj);
-            }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
-            Stream.Position = 0;
-            StreamReader sr = new StreamReader(Stream);
-            string str = sr.ReadToEnd();
-
-            sr.Dispose();
-            Stream.Dispose();
-
-            return str;
-        }
+       
 
     }
 }
