@@ -38,5 +38,53 @@ namespace MX7EDPSSAP.Repository.Implementation
             return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
         }
 
+        public async Task<IEnumerable<T>> InsertSOHDataRecord<T>(string json, int userid)
+        {
+            string commandName = "spInsertSOHRawData";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               new SqlParameter("@data",json),
+               new SqlParameter("@userid",userid)
+            };
+
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }
+
+        public async Task<IEnumerable<T>> exportPutData<T>(string store_code, int userid)
+        {
+            string commandName = "spGetPutData";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@@data",store_code),
+               new SqlParameter("@userid",userid)
+            };
+
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }
+        public async Task<IEnumerable<T>> exportPutDetailData<T>(string store_code, int userid)
+        {
+            string commandName = "spGetPutDetailData";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               new SqlParameter("@@data",store_code),
+               new SqlParameter("@userid",userid)
+            };
+
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }
+        public async Task<IEnumerable<T>> updatepathPutData<T>(string store_code,string type,string path,int userid)
+        {
+            string commandName = "spUpdatePutData";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               new SqlParameter("@store_code",store_code),
+               new SqlParameter("@type",type),
+               new SqlParameter("@path",path),
+               new SqlParameter("@userid",userid)
+            };
+
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }       
+
     }
 }

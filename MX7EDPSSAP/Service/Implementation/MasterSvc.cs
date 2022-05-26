@@ -140,7 +140,11 @@ namespace MX7EDPSSAP.Service.Implementation
                 IEnumerable<dynamic> dd = new List<dynamic>();
                 var userid = 1;
                 //var dt = new DataTable("dt");
+<<<<<<< Updated upstream
                 string csvPath = @"CSVFile\OrderData_711_Store3.csv";                
+=======
+                string csvPath = @"CSVFile\Chilled_Order_21052022_v1.csv";                
+>>>>>>> Stashed changes
 
                 var ss = GetStreamFromUrl(csvPath);
 
@@ -186,6 +190,185 @@ namespace MX7EDPSSAP.Service.Implementation
             }
         }
 
+        public async Task<List<dynamic>> retreiveSOHImport()
+        {
+            try
+            {
+                List<dynamic> resultListInJson = new List<dynamic>();
+                IEnumerable<dynamic> resultList = new List<dynamic>();
+                IEnumerable<dynamic> dd = new List<dynamic>();
+                var userid = 1;
+                //var dt = new DataTable("dt");
+                string csvPath = @"CSVFile\SOH1.csv";
+
+                var ss = GetStreamFromUrl(csvPath);
+
+<<<<<<< Updated upstream
+=======
+                var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    Encoding = Encoding.UTF8, // Our file uses UTF-8 encoding
+                    HasHeaderRecord = true,
+                    HeaderValidated = null,
+                    MissingFieldFound = null,
+                    IgnoreBlankLines = true,
+                    TrimOptions = TrimOptions.Trim
+                };
+                using (var reader = new StreamReader(ss))
+                using (var csv = new CsvReader(reader, configuration))
+                {
+
+                    dd = csv.GetRecords<SOHRawData>().ToList();
+
+                    List<dynamic> resultInJson2 = new List<dynamic>();
+                    string resultInJson = JsonConvert.SerializeObject(dd);
+
+                    resultList = await _iMasterDataRepo.InsertSOHDataRecord<SOHRawData>(resultInJson.ToString(), userid);
+
+                }
+                if (!resultList.Any())
+                {
+                    return resultListInJson;
+                }
+
+                foreach (var res in resultList)
+                {
+                    // Convert retrieved results to JSON string with customized case resolver
+                    string resultInJson = JsonConvert.SerializeObject(res, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CustomCamelCaseResolver() });
+                    var finalResult = JsonConvert.DeserializeObject(resultInJson);
+                    resultListInJson.Add(finalResult);
+                }
+                return resultListInJson;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<List<dynamic>> exportPutData(string store_code)
+        {
+            try
+            {
+                List<dynamic> resultListInJson = new List<dynamic>();
+                IEnumerable<dynamic> resultList = new List<dynamic>();
+                IEnumerable<dynamic> dd = new List<dynamic>();
+                var userid = 1;
+                //var dt = new DataTable("dt");
+                string csvPath = @"ExportCSVFile";                
+                var type = "PutData";
+                Random rnd = new Random();
+                int rnum = rnd.Next();
+                resultList = await _iMasterDataRepo.exportPutData<PutData>(store_code,userid);
+                
+                if (!resultList.Any())
+                {
+                    return resultListInJson;
+                }
+                else
+                {
+                    //var firstOrDefault= resultList.Select(item => item.store_code).FirstOrDefault();
+
+                    var csv_name = "vPutData_" + DateTime.Now.ToString("yyyyMMdd") + "_" + rnum + ".csv";
+                    if (!Directory.Exists(csvPath))
+                    {
+                        Directory.CreateDirectory(csvPath);
+                        csvPath = Path.Combine(csvPath, csv_name);
+                    }
+                    else
+                    {
+                        csvPath = Path.Combine(csvPath, csv_name);
+                    }
+                    using (var writer = new StreamWriter(csvPath))
+                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    {
+                        csv.WriteRecords(resultList);
+                    }
+                    if (File.Exists(csvPath))
+                    {
+                        resultList = await _iMasterDataRepo.updatepathPutData<PutData>(store_code,type, csv_name, userid);                        
+                    }
+                    
+                }
+
+                foreach (var res in resultList)
+                {
+                    // Convert retrieved results to JSON string with customized case resolver
+                    string resultInJson = JsonConvert.SerializeObject(res, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CustomCamelCaseResolver() });
+                    var finalResult = JsonConvert.DeserializeObject(resultInJson);
+                    resultListInJson.Add(finalResult);
+                }
+                return resultListInJson;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<List<dynamic>> exportPutDetailData(string store_code)
+        {
+            try
+            {
+                List<dynamic> resultListInJson = new List<dynamic>();
+                IEnumerable<dynamic> resultList = new List<dynamic>();
+                IEnumerable<dynamic> dd = new List<dynamic>();
+                var userid = 1;
+                //var dt = new DataTable("dt");
+                string csvPath = @"ExportCSVFile";
+                var type = "PutDetailData";
+                Random rnd = new Random();
+                int rnum = rnd.Next();
+                resultList = await _iMasterDataRepo.exportPutDetailData<PutDetailData>(store_code,userid);
+
+                if (!resultList.Any())
+                {
+                    return resultListInJson;
+                }
+                else
+                {
+                   // var firstOrDefault = resultList.Select(item => item.store_code).FirstOrDefault();
+
+                    var csv_name = "vPutDetailData_" + DateTime.Now.ToString("yyyyMMdd") + "_" + rnum + ".csv";
+                    if (!Directory.Exists(csvPath))
+                    {
+                        Directory.CreateDirectory(csvPath);
+                        csvPath = Path.Combine(csvPath, csv_name);
+                    }
+                    else
+                    {
+                        csvPath = Path.Combine(csvPath, csv_name);
+                    }
+                    using (var writer = new StreamWriter(csvPath))
+                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    {
+                        csv.WriteRecords(resultList);
+                    }
+                    if (File.Exists(csvPath))
+                    {
+                        resultList = await _iMasterDataRepo.updatepathPutData<PutDetailData>(store_code, type, csv_name, userid);
+                    }
+
+                }
+
+                foreach (var res in resultList)
+                {
+                    // Convert retrieved results to JSON string with customized case resolver
+                    string resultInJson = JsonConvert.SerializeObject(res, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CustomCamelCaseResolver() });
+                    var finalResult = JsonConvert.DeserializeObject(resultInJson);
+                    resultListInJson.Add(finalResult);
+                }
+                return resultListInJson;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
         private static Stream GetStreamFromUrl(string url)
         {
             byte[] imageData = null;
@@ -193,6 +376,7 @@ namespace MX7EDPSSAP.Service.Implementation
             using (var wc = new System.Net.WebClient())
                 imageData = wc.DownloadData(url);
 
+>>>>>>> Stashed changes
             return new MemoryStream(imageData);
         }
        

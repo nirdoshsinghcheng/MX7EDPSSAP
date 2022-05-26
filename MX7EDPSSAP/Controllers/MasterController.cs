@@ -45,10 +45,11 @@ namespace MX7EDPSSAP.Controllers
         }
 
         [HttpGet]
+        [Route("ImportRawData")]
         public async Task<IActionResult> ImportData()
         {
             try
-            {              
+            {
                 List<dynamic> results = await _masterSvc.retreiveImport();
                 return Ok(results);
             }
@@ -58,8 +59,60 @@ namespace MX7EDPSSAP.Controllers
             }
         }
 
-       
-      
-   
-}
+        [HttpGet]
+        [Route("ImportSOHData")]
+        public async Task<IActionResult> ImportSOHData()
+        {
+            try
+            {
+                List<dynamic> results = await _masterSvc.retreiveSOHImport();
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, CommonHelper.GenerateStandardErrorResponse(ex, (int)HttpStatusCode.InternalServerError, "Error retrieving aisle records list."));
+            }
+        }
+
+        [HttpGet]
+        [Route("exportPutData")]
+        public async Task<IActionResult> ExportPutData(string store_code)
+        {
+            try
+            {
+                if (store_code== "" && store_code == null)
+                {
+                    throw new InvalidParametersException($"Invalid Master Data Type: {store_code}.");
+                }
+                List<dynamic> results = await _masterSvc.exportPutData(store_code);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, CommonHelper.GenerateStandardErrorResponse(ex, (int)HttpStatusCode.InternalServerError, "Error retrieving aisle records list."));
+            }
+        }
+
+        [HttpGet]
+        [Route("exportPutDetailData")]
+        public async Task<IActionResult> ExportPutDetailData(string store_code)
+        {
+            try
+            {
+                if (store_code=="" && store_code ==null)
+                {
+                    throw new InvalidParametersException($"Invalid Master Data Type: {store_code}.");
+                }
+                List<dynamic> results = await _masterSvc.exportPutDetailData(store_code);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, CommonHelper.GenerateStandardErrorResponse(ex, (int)HttpStatusCode.InternalServerError, "Error retrieving aisle records list."));
+            }
+        }
+
+
+
+    }
 }
