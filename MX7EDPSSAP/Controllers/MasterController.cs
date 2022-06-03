@@ -10,6 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using PuppeteerSharp;
+using PuppeteerSharp.Media;
+using System.Text;
+using System.IO;
 
 namespace MX7EDPSSAP.Controllers
 {
@@ -112,6 +116,67 @@ namespace MX7EDPSSAP.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("exportCDM")]
+        //[Obsolete]
+        public async Task<IActionResult> ExportCDMData()
+        {
+            var userid = 1;
+
+            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            {
+                Headless = true
+            });
+            await using var page = await browser.NewPageAsync();
+            await page.EmulateMediaTypeAsync(MediaType.Screen);
+            string htmlStr = await _masterSvc.getCDM_data();
+            await page.SetContentAsync(htmlStr);
+            
+            var pdfContent = await page.PdfStreamAsync(new PdfOptions
+            {
+                Format = PaperFormat.A4,
+                Landscape=true,
+                PreferCSSPageSize=true,                
+                PrintBackground = true
+            });
+            
+            return File(pdfContent, "application/pdf", "ExportCDM.pdf");
+        }
+
+        [HttpGet]
+        [Route("exportCDO")]
+        //[Obsolete]
+        public async Task<IActionResult> ExportCDOData()
+        {
+            var userid = 1;
+
+            try
+            {
+                await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+                await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                {
+                    Headless = true
+                });
+                await using var page = await browser.NewPageAsync();
+                await page.EmulateMediaTypeAsync(MediaType.Screen);
+                string htmlStr = await _masterSvc.getCDO_data();
+                await page.SetContentAsync(htmlStr);
+                var pdfContent = await page.PdfStreamAsync(new PdfOptions
+                {
+                    Format = PaperFormat.A4,
+                    //Landscape = true,
+                    PrintBackground = true
+                });
+                return File(pdfContent, "application/pdf", "ExportCDO.pdf");
+
+                //return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, CommonHelper.GenerateStandardErrorResponse(ex, (int)HttpStatusCode.InternalServerError, "Error retrieving aisle records list."));
+            }           
+        }
 
 
     }

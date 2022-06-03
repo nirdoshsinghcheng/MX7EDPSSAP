@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace MX7EDPSSAP.Model
 {
     public class RawData
@@ -90,6 +92,41 @@ namespace MX7EDPSSAP.Model
         public string AUX_3 { get; set; }
         public string AUX_4 { get; set; }
         public string AUX_5 { get; set; }
+    }
+    public class cdo
+    {
+        public string StoreCode { get; set; }
+        public string RouteCode { get; set; }
+        public int StopCode { get; set; }
+        public DateTime PickDate { get; set; }
+        public DateTime OrderDate { get; set; }
+        public string StoNo { get; set; }
+        public string MilkCrateid { get; set; }
+        public string Sealid { get; set; }
+        public string Sku { get; set; }
+        public string Descrip { get; set; }
+        public int OrdPcs { get; set; }
+        public int PutPcs { get; set; }
+        public int DiffPcs { get; set; }
+        public string Type { get; set; }
+    }
+
+    public class cdm
+    {
+        public string StoreCode { get; set; }
+        public string RouteCode { get; set; }
+        public int StopCode { get; set; }
+        public string PickDate { get; set; }
+        public string PickDay { get; set; }
+        public string StoNo { get; set; }
+        public string PrintDate { get; set; }
+        public int TrayA { get; set; }
+        public int TrayB { get; set; }
+        public int TrayC { get; set; }
+        public int TrayD { get; set; }
+        public int TrayE { get; set; }
+        public int TrayF { get; set; }
+        public int TrayG { get; set; }
     }
 
 }

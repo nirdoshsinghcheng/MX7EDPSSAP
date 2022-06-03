@@ -13,7 +13,10 @@ namespace MX7EDPSSAP.Repository.Contract
         Task<IEnumerable<T>> InsertSOHDataRecord<T>(string json, int userid);
         Task<IEnumerable<T>> exportPutData<T>(string store_code,int userid);
         Task<IEnumerable<T>> exportPutDetailData<T>(string store_code,int userid);
-        Task<IEnumerable<T>> updatepathPutData<T>(string store_code, string type, string path, int userid); 
+        Task<IEnumerable<T>> updatepathPutData<T>(string store_code, string type, string path, int userid);
+        Task<IEnumerable<T>> getCDOData<T>(int userid);
+        Task<IEnumerable<T>> getCDMData<T>(int userid);
+
         //Task<T> GetMasterDataRecordById<T>(string masterDataTable, decimal masterDataId);
         //Task<int> CheckMasterDataCodeExists(string masterDataTable, string masterDataCode);
         //Task<T> GetMasterDataRecordByCode<T>(string masterDataTable, string masterDataCode);

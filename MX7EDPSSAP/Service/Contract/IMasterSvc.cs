@@ -15,5 +15,7 @@ namespace MX7EDPSSAP.Service.Contract
         Task<List<dynamic>> retreiveSOHImport();
         Task<List<dynamic>> exportPutData(string store_code);
         Task<List<dynamic>> exportPutDetailData(string store_code);
+        Task<dynamic> getCDO_data();
+        Task<dynamic> getCDM_data();
     }
 }

@@ -84,7 +84,28 @@ namespace MX7EDPSSAP.Repository.Implementation
             };
 
             return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
-        }       
+        }
+      
+
+        public async Task<IEnumerable<T>> getCDOData<T>(int userid)
+        {
+
+            string commandName = "spGetCDO_DATA";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               new SqlParameter("@userid",userid)
+            };
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }
+        public async Task<IEnumerable<T>> getCDMData<T>(int userid)
+        {
+            string commandName = "spGetCDM_DATA";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               new SqlParameter("@userid",userid)
+            };
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }
 
     }
 }
