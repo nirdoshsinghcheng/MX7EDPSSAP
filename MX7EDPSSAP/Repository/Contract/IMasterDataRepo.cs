@@ -16,7 +16,8 @@ namespace MX7EDPSSAP.Repository.Contract
         Task<IEnumerable<T>> updatepathPutData<T>(string store_code, string type, string path, int userid);
         Task<IEnumerable<T>> getCDOData<T>(int userid);
         Task<IEnumerable<T>> getCDMData<T>(int userid);
-
+        Task<IEnumerable<T>> updatefilepathCDM_CDO<T>(string routecode,string filepath,string type, int userid);
+        
         //Task<T> GetMasterDataRecordById<T>(string masterDataTable, decimal masterDataId);
         //Task<int> CheckMasterDataCodeExists(string masterDataTable, string masterDataCode);
         //Task<T> GetMasterDataRecordByCode<T>(string masterDataTable, string masterDataCode);

@@ -122,26 +122,16 @@ namespace MX7EDPSSAP.Controllers
         public async Task<IActionResult> ExportCDMData()
         {
             var userid = 1;
+            try
+            {
+                var result = await _masterSvc.getCDM_data();
 
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                Headless = true
-            });
-            await using var page = await browser.NewPageAsync();
-            await page.EmulateMediaTypeAsync(MediaType.Screen);
-            string htmlStr = await _masterSvc.getCDM_data();
-            await page.SetContentAsync(htmlStr);
-            
-            var pdfContent = await page.PdfStreamAsync(new PdfOptions
-            {
-                Format = PaperFormat.A4,
-                Landscape=true,
-                PreferCSSPageSize=true,                
-                PrintBackground = true
-            });
-            
-            return File(pdfContent, "application/pdf", "ExportCDM.pdf");
+                return StatusCode((int)HttpStatusCode.InternalServerError, CommonHelper.GenerateStandardErrorResponse(ex, (int)HttpStatusCode.InternalServerError, "Error retrieving aisle records list."));
+            }
         }
 
         [HttpGet]
@@ -150,27 +140,11 @@ namespace MX7EDPSSAP.Controllers
         public async Task<IActionResult> ExportCDOData()
         {
             var userid = 1;
-
             try
             {
-                await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-                await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-                {
-                    Headless = true
-                });
-                await using var page = await browser.NewPageAsync();
-                await page.EmulateMediaTypeAsync(MediaType.Screen);
-                string htmlStr = await _masterSvc.getCDO_data();
-                await page.SetContentAsync(htmlStr);
-                var pdfContent = await page.PdfStreamAsync(new PdfOptions
-                {
-                    Format = PaperFormat.A4,
-                    //Landscape = true,
-                    PrintBackground = true
-                });
-                return File(pdfContent, "application/pdf", "ExportCDO.pdf");
+                var result = await _masterSvc.getCDO_data();
 
-                //return Ok(results);
+                return Ok(result);
             }
             catch (Exception ex)
             {

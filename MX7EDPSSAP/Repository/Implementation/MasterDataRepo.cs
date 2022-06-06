@@ -107,5 +107,18 @@ namespace MX7EDPSSAP.Repository.Implementation
             return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
         }
 
+        public async Task<IEnumerable<T>> updatefilepathCDM_CDO<T>(string routecode,string filepath, string type, int userid)
+        {
+            string commandName = "spupdatefilepathCDM_CDO";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               new SqlParameter("@userid",userid)
+              ,new SqlParameter("@routecode",routecode)
+              ,new SqlParameter("@filepath",filepath)
+              ,new SqlParameter("@type",type)
+            };
+            return await ExecuteSelectCommandWithStoredProd<T>(commandName, parameters);
+        }
+
     }
 }

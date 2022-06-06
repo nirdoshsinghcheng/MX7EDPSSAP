@@ -11,6 +11,8 @@ using MX7EDPSSAP.Repository.DataModel;
 using MX7EDPSSAP.Service.Contract;
 using NetBarcode;
 using Newtonsoft.Json;
+using PuppeteerSharp;
+using PuppeteerSharp.Media;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -389,7 +391,49 @@ namespace MX7EDPSSAP.Service.Implementation
                 resultList = await _iMasterDataRepo.getCDOData<cdo>(userid);
                 var data = CreateDataTable(resultList);
                 var dhtml = HtmlmapperCDO(data);
-                return dhtml;                
+
+                await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+                await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                {
+                    Headless = true
+                });
+                await using var page = await browser.NewPageAsync();
+                await page.EmulateMediaTypeAsync(MediaType.Screen);
+               
+                await page.SetContentAsync(dhtml);
+                var pdfContent = await page.PdfStreamAsync(new PdfOptions
+                {
+                    Format = PaperFormat.A4,
+                    //Landscape = true,
+                    PrintBackground = true
+                });
+                string filePath = @"ExportCSVFile";
+                Random rnd = new Random();
+                int rnum = rnd.Next();
+                var pdf_name = "vCDODetailData_" + DateTime.Now.ToString("yyyyMMdd") + "_" + rnum + ".pdf";
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                    filePath = Path.Combine(filePath, pdf_name);
+                }
+                else
+                {
+                    filePath = Path.Combine(filePath, pdf_name);
+                }
+                    try
+                    {
+                     await page.PdfAsync(filePath);
+                    string routecode = "2";
+                    await page.PdfAsync(filePath);
+                    resultList = await _iMasterDataRepo.updatefilepathCDM_CDO<dynamic>(routecode, filePath, "CDO", userid);
+                    return resultList;
+                }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        throw;
+                    } 
+                             
             }
             catch (Exception ex)
             {
@@ -397,6 +441,8 @@ namespace MX7EDPSSAP.Service.Implementation
                 throw;
             }
         }
+
+
         public async Task<dynamic> getCDM_data()
         {
             try
@@ -406,13 +452,60 @@ namespace MX7EDPSSAP.Service.Implementation
                 resultList = await _iMasterDataRepo.getCDMData<cdm>(userid);
                 var data = CreateDataTable(resultList);
                 var dhtml = HtmlmapperCDM(data);
-                return dhtml;
+
+                await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+                await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                {
+                    Headless = true
+                });
+                await using var page = await browser.NewPageAsync();
+                await page.EmulateMediaTypeAsync(MediaType.Screen);
+
+                await page.SetContentAsync(dhtml);
+                var pdfContent = await page.PdfStreamAsync(new PdfOptions
+                {
+                    Format = PaperFormat.A4,
+                    Landscape = true,
+                    PrintBackground = true,
+                    MarginOptions=new MarginOptions
+                    { 
+                        Bottom="80",
+                        Top="80"
+                    }               
+                });
+                
+                string filePath = @"ExportCSVFile";
+                Random rnd = new Random();
+                int rnum = rnd.Next();
+                var pdf_name = "vCDMDetailData_" + DateTime.Now.ToString("yyyyMMdd") + "_" + rnum + ".pdf";
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                    filePath = Path.Combine(filePath, pdf_name);
+                }
+                else
+                {
+                    filePath = Path.Combine(filePath, pdf_name);
+                }
+                try
+                {
+                    string routecode = "1";
+                    await page.PdfAsync(filePath);
+                    resultList = await _iMasterDataRepo.updatefilepathCDM_CDO<dynamic>(routecode, filePath,"CDM", userid);
+                    return resultList;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    throw;
+                }
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 throw;
-            }
+            }           
         }
         public string HtmlmapperCDO(DataTable dt)
         {
